@@ -1,9 +1,9 @@
 ---
 title: EXNESS
 published: 2026-10-01
-description: A simple example of a Markdown blog post.
-tags: [Markdown, Blogging, Demo]
-category: Examples
+description: 一条外汇交易的新手教程，接触一级市场.
+tags: [Exness, 赚钱, 黄金交易, 交易，股票]
+category: 外汇交易
 draft: false
 
 
