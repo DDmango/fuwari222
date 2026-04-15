@@ -3,6 +3,8 @@
 # About
 这是关于我的介绍！[LDD](https://dkeep.netlify.app/).
 
+<img src = "wechat.jpg" width="10%"  />
+
 <img src = "./wechat.jpg" width="10%"  />
 
 <img src = "src/img/wechat.jpg" width="10%"  />
