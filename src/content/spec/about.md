@@ -7,6 +7,8 @@
 
 <img src = "./wechat.jpg" width="10%"  />
 ![](./wechat.jpg")
+![]("./wechat.jpg")
+![]("wechat.jpg")
 
 <img src = "src/img/wechat.jpg" width="10%"  />
 <img src = "img/wechat.jpg" width="10%"  />
