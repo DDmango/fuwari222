@@ -11,7 +11,7 @@ img: "./wechat.jpg"
 
 <img src = "./wechat.jpg" width="10%"  >
 
-<img src="src/img/wechat.jpg" width="10%"  >
+<img src="https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png" width="10%"  >
 <img src = "img/wechat.jpg" width="10%"  >
 <img src = "/img/wechat.jpg" width="10%"  >
 <img src = "./src/img/wechat.jpg" width="10%"  >
