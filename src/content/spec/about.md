@@ -7,16 +7,13 @@ img: "./wechat.jpg"
 # About
 这是关于我的介绍！[LDD](https://dkeep.netlify.app/).
 
-<img src = "wechat.jpg" width="100%"  >
 
-<img src = "./wechat.jpg" width="10%"  >
 
-<img src="https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png" width="10%"  >
-<img src = "img/wechat.jpg" width="10%"  >
-<img src = "/img/wechat.jpg" width="10%"  >
-<img src = "./src/img/wechat.jpg" width="10%"  >
-<img src = "../src/img/wechat.jpg" width="10%"  >
-<img src = ".../src/img/wechat.jpg" width="10%"  >
+<img src="https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png" width="50%"  >
+<img src="https://lddtuchuang.netlify.app/dd/wechat.jpg" width="50%"  >
+
+![](https://lddtuchuang.netlify.app/dd/wechat.jpg)
+
 
 ## Bilibili
 
@@ -24,8 +21,5 @@ img: "./wechat.jpg"
 
 
 
-
-
-<img src = "..../src/img/wechat.jpg" width="30%"  >
 
 
