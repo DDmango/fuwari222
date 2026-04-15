@@ -6,6 +6,11 @@
 <img src = "./wechat.jpg" width="10%"  />
 
 <img src = "src/img/wechat.jpg" width="10%"  />
+<img src = "img/wechat.jpg" width="10%"  />
+<img src = "/img/wechat.jpg" width="10%"  />
+<img src = "./src/img/wechat.jpg" width="10%"  />
+<img src = "../src/img/wechat.jpg" width="10%"  />
+<img src = ".../src/img/wechat.jpg" width="10%"  />
 
 ## Bilibili
 
