@@ -6,7 +6,7 @@
 <img src = "wechat.jpg" width="10%"  />
 
 <img src = "./wechat.jpg" width="10%"  />
-![图片说明](./wechat.jpg")
+![](./wechat.jpg")
 
 <img src = "src/img/wechat.jpg" width="10%"  />
 <img src = "img/wechat.jpg" width="10%"  />
