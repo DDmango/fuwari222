@@ -1,4 +1,3 @@
-
 import type {
 	ExpressiveCodeConfig,
 	LicenseConfig,
@@ -54,7 +53,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "https://avatars.githubusercontent.com/u/63727136?v=4&size=64", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "assets/images/touxiang.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "闲时交易",
 	bio: "跟着我的交易步骤，缓慢进行！",
 	links: [
@@ -89,4 +88,6 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
 };
->>>>>>> 4c6c944d1e95c8b51110b67a3fa96bc609dd7c34
+his blog theme currently only supports dark background color
+	theme: "github-dark",
+};
