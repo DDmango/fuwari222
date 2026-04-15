@@ -6,6 +6,8 @@ tags: [Exness, 赚钱, 黄金交易, 交易，股票]
 category: 外汇交易
 draft: false
 
+image: "https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png"    # 文章封面
+
 
 
 # title: 新手教程（1）！
