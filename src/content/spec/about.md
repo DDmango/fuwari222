@@ -12,7 +12,7 @@ img: "./wechat.jpg"
 
 
 
-<img src="https://lddtuchuang.netlify.app/dd/wechat.jpg" width="12%"  >
+<img src="https://lddtuchuang.netlify.app/dd/wechat.jpg" width="26%"  >
 
 
 
