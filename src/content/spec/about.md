@@ -21,6 +21,10 @@
 
 <iframe width="100%" height="468" src="//player.bilibili.com/player.html?isOutside=true&aid=116355747679451&bvid=BV1KgSdBZELv&cid=37276287439&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
+<iframe width="100%" height="468" src="wechat.jpg" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe width="100%" height="468" src="./wechat.jpg" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
 
 <img src = "..../src/img/wechat.jpg" width="30%"  />
 
