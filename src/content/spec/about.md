@@ -1,4 +1,8 @@
+---
 
+image: "https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png"
+img: "https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png"
+---
 
 # About
 这是关于我的介绍！[LDD](https://dkeep.netlify.app/).
