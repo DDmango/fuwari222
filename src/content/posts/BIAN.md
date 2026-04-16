@@ -33,6 +33,162 @@ lang: 'zh_CN'
 - 原本需扣除手续费 10.00 U = 10,000 × 0.100%
 - ✅ 填邀请码省下(20%) +2.00 U = 10.00 × 20%
 
+### 手续费计算器
+
+为了更直观地了解手续费支出和节省情况，你可以使用下面的计算器：
+
+<div class="calculator-container" style="background: #1a1a1a; border-radius: 12px; padding: 24px; color: white; max-width: 600px; margin: 24px auto;">
+  <h3 style="text-align: center; margin-bottom: 20px; color: #f0f0f0;">算算你到底给交易所交了多少钱？</h3>
+  <p style="text-align: center; font-size: 14px; color: #999; margin-bottom: 24px;">基于各大平台官方基础(Taker)费率表估算</p>
+  
+  <div style="margin-bottom: 20px;">
+    <label style="display: block; margin-bottom: 8px; font-size: 14px;">选择平台</label>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <select id="platform" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: white;">
+        <option value="binance">币安 Binance (邀请码: BN528返20%)</option>
+        <option value="okx">欧易 OKX</option>
+        <option value="gate">芝麻开门 Gate.io</option>
+      </select>
+      <div style="display: flex; gap: 8px;">
+        <button id="spotBtn" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: white; cursor: pointer;">现货</button>
+        <button id="futuresBtn" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: white; cursor: pointer;">合约</button>
+      </div>
+    </div>
+  </div>
+  
+  <div style="margin-bottom: 20px; padding: 12px; background: #2a2a2a; border-radius: 6px;">
+    <p style="font-size: 14px; margin-bottom: 8px;">当前吃单费率: <span id="takerFee">0.0500%</span> (挂单 <span id="makerFee">0.0200%</span>)</p>
+    <p style="font-size: 12px; color: #999;">💡 合约不仅放大了本金，且<span style="color: #ff6b6b;">双向均收取手续费</span>。<br>本次免交交易费 = 本金 × 杠杆倍数 × 2 (开+平) × 费率</p>
+  </div>
+  
+  <div style="margin-bottom: 20px;">
+    <label style="display: block; margin-bottom: 8px; font-size: 14px;">你的月均总交易量 (USDT)</label>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <input type="number" id="volume" value="18000" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: white;">
+      <button id="calculateBtn" style="padding: 10px 20px; border-radius: 6px; border: none; background: #0070f3; color: white; cursor: pointer; font-weight: bold;">计算</button>
+    </div>
+    <div style="margin-top: 8px; display: flex; gap: 12px; font-size: 12px; color: #999;">
+      <span>20万(例如U开10倍杠杆)</span>
+      <span>200万</span>
+      <span>1000万</span>
+    </div>
+  </div>
+  
+  <div style="margin-bottom: 20px;">
+    <input type="range" id="volumeSlider" min="0" max="100000000" value="18000" step="1000" style="width: 100%; margin: 16px 0;">
+    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #999;">
+      <span>0</span>
+      <span>最大: 1亿</span>
+    </div>
+  </div>
+  
+  <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+    <div style="flex: 1; padding: 16px; background: #2a2a2a; border-radius: 6px;">
+      <p style="font-size: 14px; margin-bottom: 8px; color: #999;">原本需扣除手续费</p>
+      <p style="font-size: 24px; font-weight: bold; color: #ff6b6b;"><span id="originalFee">9.00</span> u</p>
+      <p style="font-size: 12px; color: #666;">- 18,000 × 0.0500%</p>
+    </div>
+    <div style="flex: 1; padding: 16px; background: #1a3a2a; border-radius: 6px;">
+      <p style="font-size: 14px; margin-bottom: 8px; color: #999;">✅ 填邀请码省下(20%)</p>
+      <p style="font-size: 24px; font-weight: bold; color: #4ade80;">+<span id="savedFee">1.80</span> u</p>
+      <p style="font-size: 12px; color: #666;">- 9.00 × 20%</p>
+    </div>
+  </div>
+  
+  <div style="text-align: center; margin-bottom: 20px;">
+    <p style="font-size: 16px; font-weight: bold; color: #f0f0f0;">一年下来，你将白白节省 <span id="annualSaved" style="color: #4ade80;">21.60</span> USDT！</p>
+  </div>
+  
+  <div style="padding: 12px; background: #2a1a1a; border-radius: 6px; border-left: 4px solid #ff6b6b;">
+    <p style="font-size: 12px; color: #999;">⚠️ 温馨提示：以上结果是通过用户基础费率最高的标准公式计算，实际收取的手续费会根据您的交易量、是否持有平台代币以及平台的活动等因素而有所不同，请以实际到账为准。</p>
+  </div>
+</div>
+
+<script>
+  // 费率数据
+  const feeRates = {
+    binance: { spot: { taker: 0.1, maker: 0.1 }, futures: { taker: 0.05, maker: 0.02 } },
+    okx: { spot: { taker: 0.1, maker: 0.1 }, futures: { taker: 0.05, maker: 0.015 } },
+    gate: { spot: { taker: 0.2, maker: 0.2 }, futures: { taker: 0.05, maker: 0.02 } }
+  };
+  
+  // 当前选择
+  let currentPlatform = 'binance';
+  let currentMarket = 'spot';
+  
+  // DOM 元素
+  const platformSelect = document.getElementById('platform');
+  const spotBtn = document.getElementById('spotBtn');
+  const futuresBtn = document.getElementById('futuresBtn');
+  const volumeInput = document.getElementById('volume');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const calculateBtn = document.getElementById('calculateBtn');
+  const takerFeeEl = document.getElementById('takerFee');
+  const makerFeeEl = document.getElementById('makerFee');
+  const originalFeeEl = document.getElementById('originalFee');
+  const savedFeeEl = document.getElementById('savedFee');
+  const annualSavedEl = document.getElementById('annualSaved');
+  
+  // 更新费率显示
+  function updateFeeDisplay() {
+    const rates = feeRates[currentPlatform][currentMarket];
+    takerFeeEl.textContent = (rates.taker).toFixed(4) + '%';
+    makerFeeEl.textContent = (rates.maker).toFixed(4) + '%';
+  }
+  
+  // 计算手续费
+  function calculateFees() {
+    const volume = parseFloat(volumeInput.value) || 0;
+    const rates = feeRates[currentPlatform][currentMarket];
+    const originalFee = volume * (rates.taker / 100);
+    const savedFee = originalFee * 0.2; // 20% 返佣
+    const annualSaved = savedFee * 12;
+    
+    originalFeeEl.textContent = originalFee.toFixed(2);
+    savedFeeEl.textContent = savedFee.toFixed(2);
+    annualSavedEl.textContent = annualSaved.toFixed(2);
+  }
+  
+  // 事件监听器
+  platformSelect.addEventListener('change', function() {
+    currentPlatform = this.value;
+    updateFeeDisplay();
+    calculateFees();
+  });
+  
+  spotBtn.addEventListener('click', function() {
+    currentMarket = 'spot';
+    spotBtn.style.background = '#0070f3';
+    futuresBtn.style.background = '#2a2a2a';
+    updateFeeDisplay();
+    calculateFees();
+  });
+  
+  futuresBtn.addEventListener('click', function() {
+    currentMarket = 'futures';
+    futuresBtn.style.background = '#0070f3';
+    spotBtn.style.background = '#2a2a2a';
+    updateFeeDisplay();
+    calculateFees();
+  });
+  
+  volumeInput.addEventListener('input', function() {
+    volumeSlider.value = this.value;
+    calculateFees();
+  });
+  
+  volumeSlider.addEventListener('input', function() {
+    volumeInput.value = this.value;
+    calculateFees();
+  });
+  
+  calculateBtn.addEventListener('click', calculateFees);
+  
+  // 初始化
+  updateFeeDisplay();
+  calculateFees();
+</script>
+
 ## 二、交易所手续费怎么返？其实超简单
 
 很多人不知道，交易所的手续费其实是可以“打折”的，方法就是——填写邀请码。
