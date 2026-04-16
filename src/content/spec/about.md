@@ -2,7 +2,7 @@
 
 image: "wechat.jpg"
 img: "./wechat.jpg"
-# ![](https://lddtuchuang.netlify.app/dd/wechat.jpg)
+# ![](https://ddtuc.netlify.app/dd/wechat.jpg)
 # <img src="https://s3.bmp.ovh/imgs/2025/06/05/3124184d596a42ff.png" width="50%"  >
 ---
 
@@ -12,7 +12,7 @@ img: "./wechat.jpg"
 
 
 
-<img src="https://lddtuchuang.netlify.app/dd/wechat.jpg" width="26%"  >
+<img src="https://ddtuc.netlify.app/dd/wechat.jpg" width="26%"  >
 
 
 
