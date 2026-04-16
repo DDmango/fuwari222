@@ -1,5 +1,6 @@
 import type {
 	ExpressiveCodeConfig,
+	GiscusConfig,
 	LicenseConfig,
 	NavBarConfig,
 	ProfileConfig,
@@ -29,16 +30,15 @@ export const siteConfig: SiteConfig = {
 		enable: true, // Display the table of contents on the right side of the post
 		depth: 2, // Maximum heading depth to show in the table, from 1 to 3
 	},
-	favicon: [ 
+	favicon: [
 		// Leave this array empty to use the default favicon
-		 {
-			src: 'https://lddtuchuang.netlify.app/dd/touxiang.jpg',
+		{
+			src: "https://lddtuchuang.netlify.app/dd/touxiang.jpg",
 			//  src: './src/img/wechat.jpg',
-		//   src: '/favicon/icon.png',    // Path of the favicon, relative to the /public directory
-		//   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
-		//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
-		 }
-		
+			//   src: '/favicon/icon.png',    // Path of the favicon, relative to the /public directory
+			//   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
+			//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
+		},
 	],
 };
 
@@ -51,12 +51,12 @@ export const navBarConfig: NavBarConfig = {
 			url: "/remengupiao/", // Internal links should not include the base path, as it is automatically added
 			external: false, // Show an external link icon and will open in a new tab
 		},
-		 {
+		{
 			name: "股市图表",
 			url: "/gushi/", // Internal links should not include the base path, as it is automatically added
 			external: false, // Show an external link icon and will open in a new tab
-		 },
-		
+		},
+
 		{
 			name: "加密货币",
 			url: "/crypto/", // Internal links should not include the base path, as it is automatically added
@@ -108,4 +108,16 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	theme: "github-dark",
 };
 
-
+export const giscusConfig: GiscusConfig = {
+	enable: true, // 设置为 true 启用 Giscus 评论
+	repo: "DDmango/fuwari222", // 替换为你的 GitHub 仓库
+	repoId: "R_kgDOSDsNmg", // 从 Giscus 生成器获取
+	category: "Announcements", // 评论分类
+	categoryId: "DIC_kwDOSDsNms4C6_nW", // 从 Giscus 生成器获取
+	mapping: "pathname", // 页面映射方式
+	reactionsEnabled: "1", // 启用反应表情
+	emitMetadata: "0", // 不发送元数据
+	inputPosition: "bottom", // 输入框位置
+	theme: "preferred_color_scheme", // 主题跟随系统
+	lang: "zh-CN", // 语言
+};
