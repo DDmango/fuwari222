@@ -1,0 +1,409 @@
+---
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+const API_KEY = '69e07e9fbf48a8.28155838';
+
+const hotStocks = [
+    { code: '600519.SS', name: '贵州茅台', industry: '白酒' },
+    { code: '000858.SZ', name: '五粮液', industry: '白酒' },
+    { code: '601318.SS', name: '中国平安', industry: '保险' },
+    { code: '000001.SZ', name: '平安银行', industry: '银行' },
+    { code: '600036.SS', name: '招商银行', industry: '银行' },
+    { code: 'AAPL.US', name: '苹果公司', industry: '科技' },
+    { code: 'MSFT.US', name: '微软', industry: '科技' },
+    { code: 'GOOGL.US', name: '谷歌', industry: '科技' },
+    { code: 'BABA.US', name: '阿里巴巴', industry: '电商' },
+    { code: 'TSLA.US', name: '特斯拉', industry: '新能源' },
+];
+
+const mockData = {
+    '600519.SS': { close: '1685.00', change: '2.35', changePercent: '+2.35%', isUp: true },
+    '000858.SZ': { close: '145.60', change: '-1.20', changePercent: '-1.20%', isUp: false },
+    '601318.SS': { close: '48.80', change: '0.85', changePercent: '+0.85%', isUp: true },
+    '000001.SZ': { close: '12.35', change: '-0.55', changePercent: '-0.55%', isUp: false },
+    '600036.SS': { close: '35.68', change: '1.20', changePercent: '+1.20%', isUp: true },
+    'AAPL.US': { close: '178.50', change: '1.80', changePercent: '+1.80%', isUp: true },
+    'MSFT.US': { close: '378.90', change: '-0.95', changePercent: '-0.95%', isUp: false },
+    'GOOGL.US': { close: '141.20', change: '2.15', changePercent: '+2.15%', isUp: true },
+    'BABA.US': { close: '85.60', change: '-1.35', changePercent: '-1.35%', isUp: false },
+    'TSLA.US': { close: '248.30', change: '3.20', changePercent: '+3.20%', isUp: true },
+};
+
+async function fetchStockData(code) {
+    const url = `https://eodhd.com/api/eod/${code}?api_token=${API_KEY}&fmt=json`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+            timeout: 10000
+        });
+        
+        if (!response.ok) {
+            console.warn(`API request failed for ${code}: ${response.status}`);
+            return mockData[code] || null;
+        }
+        
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) {
+            console.warn(`No data returned for ${code}`);
+            return mockData[code] || null;
+        }
+        
+        const latest = data[data.length - 1];
+        const prev = data.length > 1 ? data[data.length - 2] : latest;
+        
+        if (typeof latest.close !== 'number') {
+            console.warn(`Invalid close price for ${code}`);
+            return mockData[code] || null;
+        }
+        
+        const change = typeof prev.close === 'number' 
+            ? ((latest.close - prev.close) / prev.close * 100).toFixed(2) 
+            : '0';
+        
+        return {
+            code,
+            date: latest.date || new Date().toISOString().split('T')[0],
+            open: typeof latest.open === 'number' ? latest.open.toFixed(2) : (latest.open || '--'),
+            close: latest.close.toFixed(2),
+            high: typeof latest.high === 'number' ? latest.high.toFixed(2) : (latest.high || '--'),
+            low: typeof latest.low === 'number' ? latest.low.toFixed(2) : (latest.low || '--'),
+            change,
+            changePercent: `${parseFloat(change) > 0 ? '+' : ''}${change}%`,
+            isUp: parseFloat(change) >= 0
+        };
+    } catch (error) {
+        console.warn(`Fetch failed for ${code}: ${error.message}`);
+        return mockData[code] || null;
+    }
+}
+
+const stockData = await Promise.all(hotStocks.map(async stock => {
+    const fetched = await fetchStockData(stock.code);
+    if (fetched) {
+        return { ...stock, ...fetched };
+    }
+    return { 
+        ...stock, 
+        close: mockData[stock.code]?.close || '--',
+        changePercent: mockData[stock.code]?.changePercent || '--',
+        isUp: mockData[stock.code]?.isUp || false
+    };
+}));
+
+const sortedStocks = [...stockData].sort((a, b) => {
+    const aChange = parseFloat(a.change) || 0;
+    const bChange = parseFloat(b.change) || 0;
+    return bChange - aChange;
+});
+---
+
+<MainGridLayout title="今日热门股票" description="每日热门股票行情">
+    <div class="space-y-6">
+        <div class="card-base p-6 rounded-[var(--radius-large)]">
+            <h1 class="text-3xl font-bold mb-2">今日热门股票</h1>
+            <p class="text-gray-500 dark:text-gray-400">实时查看热门股票行情与详情</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card-base p-6 rounded-[var(--radius-large)]">
+                <h2 class="text-xl font-bold mb-4">涨幅榜 TOP 5</h2>
+                <div class="space-y-3">
+                    {sortedStocks.slice(0, 5).map((stock, index) => (
+                        <div 
+                            class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                            onclick="showStockDetail('{stock.code}')"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full text-white font-bold text-sm"
+                                    style="background: linear-gradient(135deg, #22c55e, #16a34a)">
+                                    {index + 1}
+                                </span>
+                                <div>
+                                    <div class="font-medium">{stock.name}</div>
+                                    <div class="text-sm text-gray-500">{stock.code} · {stock.industry}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-lg">¥{stock.close}</div>
+                                <div class={`text-sm font-medium ${stock.isUp ? 'text-green-500' : 'text-red-500'}`}>
+                                    {stock.changePercent}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div class="card-base p-6 rounded-[var(--radius-large)]">
+                <h2 class="text-xl font-bold mb-4">跌幅榜 TOP 5</h2>
+                <div class="space-y-3">
+                    {sortedStocks.slice(-5).reverse().map((stock, index) => (
+                        <div 
+                            class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                            onclick="showStockDetail('{stock.code}')"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full text-white font-bold text-sm"
+                                    style="background: linear-gradient(135deg, #ef4444, #dc2626)">
+                                    {index + 1}
+                                </span>
+                                <div>
+                                    <div class="font-medium">{stock.name}</div>
+                                    <div class="text-sm text-gray-500">{stock.code} · {stock.industry}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-lg">¥{stock.close}</div>
+                                <div class={`text-sm font-medium ${stock.isUp ? 'text-green-500' : 'text-red-500'}`}>
+                                    {stock.changePercent}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+
+        <div class="card-base p-6 rounded-[var(--radius-large)]">
+            <h2 class="text-xl font-bold mb-4">全部热门股票</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th class="text-left py-3 px-4 font-medium text-gray-500">股票代码</th>
+                            <th class="text-left py-3 px-4 font-medium text-gray-500">股票名称</th>
+                            <th class="text-left py-3 px-4 font-medium text-gray-500">行业</th>
+                            <th class="text-right py-3 px-4 font-medium text-gray-500">最新价</th>
+                            <th class="text-right py-3 px-4 font-medium text-gray-500">涨跌幅</th>
+                            <th class="text-right py-3 px-4 font-medium text-gray-500">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {stockData.map(stock => (
+                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <td class="py-3 px-4 font-mono text-sm">{stock.code}</td>
+                                <td class="py-3 px-4 font-medium">{stock.name}</td>
+                                <td class="py-3 px-4 text-gray-500">{stock.industry}</td>
+                                <td class="py-3 px-4 text-right font-bold">¥{stock.close}</td>
+                                <td class={`py-3 px-4 text-right font-medium ${stock.isUp ? 'text-green-500' : 'text-red-500'}`}>
+                                    {stock.changePercent}
+                                </td>
+                                <td class="py-3 px-4 text-right">
+                                    <button 
+                                        class="px-3 py-1 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors"
+                                        onclick="showStockDetail('{stock.code}')"
+                                    >
+                                        查看详情
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="stock-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="modal-title" class="text-xl font-bold"></h3>
+                    <button 
+                        class="text-gray-400 hover:text-gray-600 text-2xl"
+                        onclick="closeModal()"
+                    >
+                        ×
+                    </button>
+                </div>
+                <div id="modal-content">
+                    <div class="flex justify-center items-center py-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mockStockData = {
+            '600519.SS': { open: '1650.00', close: '1685.00', high: '1695.00', low: '1645.00', change: '+2.35%', date: '2024-01-15' },
+            '000858.SZ': { open: '147.00', close: '145.60', high: '148.50', low: '144.80', change: '-1.20%', date: '2024-01-15' },
+            '601318.SS': { open: '48.40', close: '48.80', high: '49.20', low: '48.10', change: '+0.85%', date: '2024-01-15' },
+            '000001.SZ': { open: '12.90', close: '12.35', high: '13.00', low: '12.20', change: '-0.55%', date: '2024-01-15' },
+            '600036.SS': { open: '34.50', close: '35.68', high: '36.00', low: '34.30', change: '+1.20%', date: '2024-01-15' },
+            'AAPL.US': { open: '176.80', close: '178.50', high: '179.20', low: '176.50', change: '+1.80%', date: '2024-01-15' },
+            'MSFT.US': { open: '380.00', close: '378.90', high: '381.50', low: '377.80', change: '-0.95%', date: '2024-01-15' },
+            'GOOGL.US': { open: '139.00', close: '141.20', high: '142.00', low: '138.80', change: '+2.15%', date: '2024-01-15' },
+            'BABA.US': { open: '87.00', close: '85.60', high: '87.50', low: '85.20', change: '-1.35%', date: '2024-01-15' },
+            'TSLA.US': { open: '245.00', close: '248.30', high: '250.00', low: '244.50', change: '+3.20%', date: '2024-01-15' },
+        };
+
+        async function showStockDetail(code) {
+            const modal = document.getElementById('stock-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+            
+            title.textContent = `Loading ${code}...`;
+            content.innerHTML = '<div class="flex justify-center items-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>';
+            modal.classList.remove('hidden');
+            
+            const apiKey = '69e07e9fbf48a8.28155838';
+            const url = `https://eodhd.com/api/eod/${code}?api_token=${apiKey}&fmt=json`;
+            const mock = mockStockData[code] || { open: '--', close: '--', high: '--', low: '--', change: '--', date: '--' };
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('API error');
+                
+                const data = await response.json();
+                if (!Array.isArray(data) || data.length === 0) throw new Error('No data');
+                
+                const latest = data[data.length - 1];
+                const prev = data.length > 1 ? data[data.length - 2] : latest;
+                
+                const change = typeof latest.close === 'number' && typeof prev.close === 'number' 
+                    ? ((latest.close - prev.close) / prev.close * 100).toFixed(2) 
+                    : '0';
+                const isUp = parseFloat(change) >= 0;
+                
+                title.textContent = `${code}`;
+                content.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">开盘价</div>
+                            <div class="text-2xl font-bold">¥${typeof latest.open === 'number' ? latest.open.toFixed(2) : latest.open}</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">收盘价</div>
+                            <div class="text-2xl font-bold">¥${typeof latest.close === 'number' ? latest.close.toFixed(2) : latest.close}</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">最高价</div>
+                            <div class="text-2xl font-bold text-red-500">¥${typeof latest.high === 'number' ? latest.high.toFixed(2) : latest.high}</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">最低价</div>
+                            <div class="text-2xl font-bold text-green-500">¥${typeof latest.low === 'number' ? latest.low.toFixed(2) : latest.low}</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">涨跌幅</span>
+                            <span class="text-3xl font-bold ${isUp ? 'text-green-500' : 'text-red-500'}">
+                                ${isUp ? '+' : ''}${change}%
+                            </span>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-400">数据日期: ${latest.date}</div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2">近期走势</h4>
+                        <canvas id="detail-chart" class="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-lg"></canvas>
+                    </div>
+                `;
+                
+                drawMiniChart(data);
+            } catch (error) {
+                console.log('Using mock data for', code);
+                title.textContent = `${code}`;
+                content.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">开盘价</div>
+                            <div class="text-2xl font-bold">¥${mock.open}</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">收盘价</div>
+                            <div class="text-2xl font-bold">¥${mock.close}</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">最高价</div>
+                            <div class="text-2xl font-bold text-red-500">¥${mock.high}</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="text-sm text-gray-500">最低价</div>
+                            <div class="text-2xl font-bold text-green-500">¥${mock.low}</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">涨跌幅</span>
+                            <span class="text-3xl font-bold ${mock.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}">
+                                ${mock.change}
+                            </span>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-400">数据日期: ${mock.date}</div>
+                    </div>
+                    <div class="text-center py-4 text-gray-400 text-sm">
+                        使用模拟数据（API不可用）
+                    </div>
+                `;
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('stock-modal').classList.add('hidden');
+        }
+        
+        function drawMiniChart(data) {
+            const canvas = document.getElementById('detail-chart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = 192;
+            
+            const width = rect.width;
+            const height = 192;
+            const padding = 20;
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            ctx.fillStyle = isDark ? '#1f2937' : '#f3f4f6';
+            ctx.fillRect(0, 0, width, height);
+            
+            const prices = data.map(item => typeof item.close === 'number' ? item.close : 0);
+            if (prices.length === 0) return;
+            
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceRange = maxPrice - minPrice || 1;
+            
+            const stepX = (width - padding * 2) / (data.length - 1);
+            
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            data.forEach((item, index) => {
+                const x = padding + index * stepX;
+                const y = padding + (height - padding * 2) * (1 - ((typeof item.close === 'number' ? item.close : 0) - minPrice) / priceRange);
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            const lastItem = data[data.length - 1];
+            const lastX = padding + (data.length - 1) * stepX;
+            const lastY = padding + (height - padding * 2) * (1 - ((typeof lastItem.close === 'number' ? lastItem.close : 0) - minPrice) / priceRange);
+            
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'stock-modal') {
+                closeModal();
+            }
+        });
+    </script>
+</MainGridLayout>

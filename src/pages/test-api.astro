@@ -1,0 +1,95 @@
+---
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="API测试" description="测试eodhd.com API连接">
+    <div class="space-y-6">
+        <div class="card-base p-6 rounded-[var(--radius-large)]">
+            <h1 class="text-3xl font-bold mb-2">API测试</h1>
+            <p class="text-gray-500 dark:text-gray-400">测试eodhd.com API连接是否正常</p>
+        </div>
+
+        <div class="card-base p-6 rounded-[var(--radius-large)]">
+            <button 
+                id="test-btn" 
+                class="px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                onclick="testAPI()"
+            >
+                测试API连接
+            </button>
+
+            <div id="result" class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                点击按钮测试API...
+            </div>
+
+            <div id="log" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-300 text-sm font-mono max-h-60 overflow-auto">
+                日志输出:<br>
+            </div>
+        </div>
+    </div>
+</MainGridLayout>
+
+<script>
+const API_KEY = '69e07e9fbf48a8.28155838';
+const BASE_URL = 'https://eodhd.com/api';
+
+function log(message) {
+    const logDiv = document.getElementById('log');
+    logDiv.innerHTML += message + '<br>';
+    logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+async function testAPI() {
+    const resultDiv = document.getElementById('result');
+    const btn = document.getElementById('test-btn');
+    
+    btn.disabled = true;
+    btn.textContent = '测试中...';
+    resultDiv.textContent = '正在测试API连接...';
+    document.getElementById('log').innerHTML = '日志输出:<br>';
+    
+    log('API Key: ' + API_KEY);
+    log('测试股票代码: 600519.SS');
+    
+    const url = `${BASE_URL}/eod/600519.SS?api_token=${API_KEY}&fmt=json`;
+    log('请求URL: ' + url);
+    
+    try {
+        log('开始发送请求...');
+        const response = await fetch(url);
+        log('响应状态: ' + response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            log('错误响应: ' + errorText);
+            resultDiv.textContent = 'API请求失败，状态码: ' + response.status;
+            resultDiv.style.color = '#ef4444';
+            return;
+        }
+        
+        log('响应成功，解析数据...');
+        const data = await response.json();
+        
+        if (!Array.isArray(data) || data.length === 0) {
+            log('数据为空或格式错误');
+            resultDiv.textContent = '未获取到数据';
+            resultDiv.style.color = '#ef4444';
+            return;
+        }
+        
+        log('数据获取成功，条数: ' + data.length);
+        log('第一条数据: ' + JSON.stringify(data[0]));
+        
+        resultDiv.textContent = 'API连接成功！已获取 ' + data.length + ' 条数据';
+        resultDiv.style.color = '#22c55e';
+        
+    } catch (error) {
+        log('请求异常: ' + error.message);
+        resultDiv.textContent = '请求失败: ' + error.message;
+        resultDiv.style.color = '#ef4444';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '测试API连接';
+    }
+}
+</script>
